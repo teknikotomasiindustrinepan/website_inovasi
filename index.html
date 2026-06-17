@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriot Classy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: #2d6a4f;
+            color: #fff;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .header a {
+            color: #fff;
+            font-size: 13px;
+            text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .header a:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* iframe container */
+        .iframe-wrapper {
+            flex: 1;
+            position: relative;
+            background: #fff;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Loading spinner */
+        .loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            z-index: 10;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .loading.hidden {
+            opacity: 0;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #2d6a4f;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .loading p {
+            margin-top: 12px;
+            color: #888;
+            font-size: 14px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pesan error */
+        .error-msg {
+            display: none;
+            position: absolute;
+            inset: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            z-index: 11;
+            padding: 20px;
+            text-align: center;
+        }
+        .error-msg.show {
+            display: flex;
+        }
+        .error-msg .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .error-msg h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .error-msg p {
+            color: #666;
+            font-size: 14px;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+        .error-msg .btn {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 24px;
+            background: #2d6a4f;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .error-msg .btn:hover {
+            background: #1b4d36;
+        }
+
+        /* Footer */
+        .footer {
+            flex-shrink: 0;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #999;
+            background: #fff;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>&#127793; Agriot Classy</h1>
+        <a href="http://agriotclassy.page.gd/index.php" target="_blank" rel="noopener">&#8599; Buka di Tab Baru</a>
+    </div>
+
+    <div class="iframe-wrapper">
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Memuat halaman...</p>
+        </div>
+
+        <!-- Error -->
+        <div class="error-msg" id="errorMsg">
+            <div class="icon">&#9888;</div>
+            <h2>Gagal Memuat</h2>
+            <p>Halaman tidak dapat ditampilkan karena website tersebut memblokir <strong>iframe</strong> atau terjadi koneksi bermasalah.</p>
+            <a class="btn" href="http://agriotclassy.page.gd/index.php" target="_blank" rel="noopener">Buka Langsung</a>
+        </div>
+
+        <iframe
+            id="siteFrame"
+            src="http://agriotclassy.page.gd/index.php"
+            onload="handleLoad()"
+            onerror="handleError()"
+        ></iframe>
+    </div>
+
+    <div class="footer">
+        Agriot Classy &mdash; <span id="year"></span>
+    </div>
+
+    <script>
+        var frame = document.getElementById('siteFrame');
+        var loading = document.getElementById('loading');
+        var errorMsg = document.getElementById('errorMsg');
+        var loaded = false;
+
+        function handleLoad() {
+            loaded = true;
+            loading.classList.add('hidden');
+            setTimeout(function() {
+                loading.style.display = 'none';
+            }, 500);
+        }
+
+        function handleError() {
+            loading.classList.add('hidden');
+            loading.style.display = 'none';
+            errorMsg.classList.add('show');
+        }
+
+        // Timeout: jika 15 detik belum load, anggap error
+        setTimeout(function() {
+            if (!loaded) {
+                handleError();
+            }
+        }, 15000);
+
+        // Footer year
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+
+</body>
+</html>
