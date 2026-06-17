@@ -1,11 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=http://agriotclassy.page.gd/index.php">
-    <title>Redirecting...</title>
-</head>
-<body>
-    <p>Redirecting to <a href="http://agriotclassy.page.gd/index.php">Agriot Classy</a>...</p>
-</body>
-</html>
+<?php
+$target = 'http://agriotclassy.page.gd/index.php';
+
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL => $target,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_TIMEOUT => 30,
+    CURLOPT_HTTPHEADER => [
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    ],
+]);
+
+$html = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+curl_close($ch);
+
+if ($httpCode !== 200 || $html === false) {
+    http_response_code(500);
+    echo '<h1>Gagal memuat konten</h1>';
+    exit;
+}
+
+// Ubah relative URL ke absolute supaya CSS/gambar tetap jalan
+$baseUrl = 'http://agriotclassy.page.gd';
+$html = preg_replace(
+    '/(src|href|action)=["\'](?!https?:\/\/|\/\/|#|javascript:|data:)([^"\']+)["\']/i',
+    '$1="' . $baseUrl . '/$2"',
+    $html
+);
+
+// Hapus tag <base> kalau ada
+$html = preg_replace('/<base[^>]*>/i', '', $html);
+
+// Push base URL via JS (non-blocking)
+$baseTag = '<base href="' . $baseUrl . '/">';
+$html = preg_replace('/<head[^>]*>/i', '<head>' . $baseTag, $html, 1);
+
+header('Content-Type: text/html; charset=utf-8');
+echo $html;
